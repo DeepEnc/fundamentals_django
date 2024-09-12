@@ -13,7 +13,7 @@ App Page
      <div class="bg-green-800 p-5 rounded">
          <img class="rounded shadow-lg" src="{{app.image.url}}" alt="">
          <h3 class="text-2xl font-bold">{{app.name}}</h3>
-         <a href="#">
+         <a href="{% url 'app_detail' app.id %}">
             <button
             type="botton"
             class ="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
@@ -26,5 +26,3 @@ App Page
 </div>
 
 {% endblock %}
-
-
