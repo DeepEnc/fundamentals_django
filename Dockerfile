@@ -3,13 +3,12 @@ FROM python:latest
 WORKDIR /app
 
 COPY requirements.txt /app/
-COPY fundamentals_django /app/fundamentals_django/
 
-RUN apt-get update
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN apt-get update && pip install --upgrade pip && pip install -r requirements.txt
 
 # RUN pip install --no-cache-dir -r requirements.txt
+
+COPY fundamentals_django /app/fundamentals_django/
 
 # Set working directory to the Django project
 WORKDIR /app/fundamentals_django
