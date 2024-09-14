@@ -1,9 +1,5 @@
 from django.contrib import admin
-from .models import AppVariety
-from .models import AppReview
-from .models import AppStore
-from .models import AppCertificate
-
+from .models import AppVariety, AppReview, AppStore, AppCertificate
 class AppReviewInLine(admin.TabularInline):
     model = AppReview
     extra = 2
