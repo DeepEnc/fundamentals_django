@@ -27,7 +27,6 @@ class AppReview(models.Model):
     def __str__(self):
         return f'{self.user.username} review for {self.app.name}'
 
-
 class AppStore(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
