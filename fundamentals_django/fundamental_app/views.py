@@ -18,4 +18,6 @@ def app_store_view(request):
      if form.is_valid():
          app_variety = form.cleaned_data['app_variety']
          stores = AppStore.objects.filter(app_varieties=app_variety)   
-    return render(request, 'fundamental_app/app_store.html', {stores: stores})
+    else:
+       form = AppVarietyForm()
+    return render(request, 'fundamental_app/app_store.html', {'stores': stores, 'form': form})
