@@ -13,7 +13,7 @@ def app_detail(request, app_id):
 
 def app_store_view(request):
     stores = None
-    if request.method =='POST':
+    if request.method == 'POST':
      form = AppVarietyForm(request.POST)
      if form.is_valid():
          app_variety = form.cleaned_data['app_variety']
