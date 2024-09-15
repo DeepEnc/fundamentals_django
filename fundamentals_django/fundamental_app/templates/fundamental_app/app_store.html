@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<form method="POST" class="text-black">
+<form method="POST">
     {% csrf_token %}
     {{form.as_p}}
     <button type="submit">Search Store
