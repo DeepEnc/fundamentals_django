@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from .models import AppVariety
+from .models import AppVariety, AppStore
 from django.shortcuts import get_object_or_404
+from .forms import AppVarietyForm
 
 def app(request):
     apps = AppVariety.objects.all()
@@ -11,4 +12,10 @@ def app_detail(request, app_id):
     return render(request, 'fundamental_app/app_detail.html', {'app': app})
 
 def app_store_view(request):
-    return render(request, 'fundamental_app/app_store.html')
+    stores = None
+    if request.method =='POST':
+     form = AppVarietyForm(request.POST)
+     if form.is_valid():
+         app_variety = form.cleaned_data['app_variety']
+         stores = AppStore.objects.filter(app_varieties=app_variety)   
+    return render(request, 'fundamental_app/app_store.html', {stores: stores})
