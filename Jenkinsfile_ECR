@@ -1,0 +1,65 @@
+pipeline {
+    agent {
+        docker {
+            image 'docker:latest' // Use Docker image
+            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket
+        }
+    }
+
+    environment {
+        AWS_REGION = 'us-east-1' // Specify your AWS region
+        ECR_URI = '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-repo' // Replace with your ECR URI
+        IMAGE_NAME = 'my-image' // Specify your image name
+        AWS_CREDENTIALS = credentials('aws-credentials') // Jenkins credentials ID for AWS
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/yourusername/yourrepo.git' // Checkout your repository
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${IMAGE_NAME} ."
+                }
+            }
+        }
+
+        stage('Login to ECR') {
+            steps {
+                script {
+                    // Log in to AWS ECR
+                    sh """
+                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_URI}
+                    """
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Tag the image
+                    sh "docker tag ${IMAGE_NAME}:latest ${ECR_URI}:latest"
+                    // Push the image to ECR
+                    sh "docker push ${ECR_URI}:latest"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Apply Kubernetes configuration (assuming deployment.yaml is present)
+                    sh "kubectl apply -f k8s/deployment.yaml"
+
+                    // Optionally update the image in the deployment
+                    sh "kubectl set image deployment/my-deployment my-container=${ECR_URI}:latest --record"
+                }
+            }
+        }
+    }
+}
