@@ -1,12 +1,15 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'docker:latest' // Use the Docker image
+            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket for Docker commands
+        }
+    }
 
     environment {
-        AWS_REGION = 'your-aws-region'
-        ECR_URI = 'your-ecr-repo-uri'
-        IMAGE_NAME = 'your-image-name'
-        CLUSTER_NAME = 'your-eks-cluster-name'
-        DEPLOYMENT_NAME = 'your-deployment-name'
+        AWS_REGION = 'us-east-1'
+        ECR_URI = '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-repo'
+        IMAGE_NAME = 'my-image'
     }
 
     stages {
@@ -19,17 +22,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t ${IMAGE_NAME} .'
-                }
-            }
-        }
-
-        stage('Login to ECR') {
-            steps {
-                script {
-                    sh '''
-                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_URI}
-                    '''
+                    sh "docker build -t ${IMAGE_NAME} ."
                 }
             }
         }
@@ -37,29 +30,21 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    sh '''
-                    docker tag ${IMAGE_NAME}:latest ${ECR_URI}:${BUILD_NUMBER}
-                    docker push ${ECR_URI}:${BUILD_NUMBER}
-                    '''
+                    sh """
+                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_URI}
+                    docker tag ${IMAGE_NAME}:latest ${ECR_URI}:latest
+                    docker push ${ECR_URI}:latest
+                    """
                 }
             }
         }
 
-        stage('Deploy to EKS') {
+        stage('Deploy') {
             steps {
                 script {
-                    sh '''
-                    kubectl set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${ECR_URI}:${BUILD_NUMBER} --record
-                    kubectl rollout status deployment/${DEPLOYMENT_NAME}
-                    '''
+                    sh "kubectl set image deployment/my-deployment my-container=${ECR_URI}:latest --record"
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            cleanWs()
         }
     }
 }
