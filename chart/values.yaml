@@ -1,0 +1,11 @@
+replicaCount: 2
+
+image:
+  repository: ""
+  tag: "latest"
+
+service:
+  type: LoadBalancer
+  port: 80
+
+resources: {}
