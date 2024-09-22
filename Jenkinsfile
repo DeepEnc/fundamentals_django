@@ -42,6 +42,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    // Apply the Kubernetes configuration
+                    sh "kubectl apply -f k8s/deployment.yaml"
+                    // Optionally set the image
                     sh "kubectl set image deployment/my-deployment my-container=${ECR_URI}:latest --record"
                 }
             }
