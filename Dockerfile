@@ -18,3 +18,6 @@ ENTRYPOINT ["python3", "manage.py"]
 
 # Run the development server
 CMD ["runserver", "0.0.0.0:8000"]
+
+# RUN python manage.py collectstatic --noinput
+# CMD ["waitress-serve", "--host=0.0.0.0", "--port=8000", "fundamental_django.wsgi:application"]
